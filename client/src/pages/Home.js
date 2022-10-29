@@ -1,25 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { getAllMatchups } from '../utils/api';
+import { useQuery } from "@apollo/client";
+import { Link } from "react-router-dom";
+import { QUERY_MATCHUPS } from "../utils/queries";
 
 const Home = () => {
-  const [matchupList, setMatchupList] = useState([]);
+  const { loading, data, error } = useQuery(QUERY_MATCHUPS, {
+    fetchPolicy: "no-cache",
+  });
 
-  useEffect(() => {
-    const getMatchupList = async () => {
-      try {
-        const res = await getAllMatchups();
-        if (!res.ok) {
-          throw new Error('No list of matchups');
-        }
-        const matchupList = await res.json();
-        setMatchupList(matchupList);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    getMatchupList();
-  }, []);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  const matchupList = data?.matchups || [];
 
   return (
     <div className="card bg-white card-rounded w-50">
