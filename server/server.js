@@ -1,19 +1,15 @@
 const express = require("express");
 const path = require("path");
-const db = require("./config/connection");
-const routes = require("./routes");
 const { createServer } = require("http");
 const { ApolloServer } = require("apollo-server-express");
 const { makeExecutableSchema } = require("@graphql-tools/schema");
 const { gql } = require("apollo-server");
 
-(async function () {
-  const typeDefs = gql`
-    type Query {
-      hello: String
-    }
-  `;
+const db = require("./config/connection");
+const routes = require("./routes");
+const { typeDefs, resolvers } = require("./schema");
 
+(async function () {
   // create express app
   const app = express();
 
@@ -30,7 +26,7 @@ const { gql } = require("apollo-server");
   const httpServer = createServer(app);
 
   // make a gql schema
-  const schema = makeExecutableSchema({ typeDefs });
+  const schema = makeExecutableSchema({ typeDefs, resolvers });
 
   // create apollo server with typedefs and resolvers (typedefs required for the server to run)
   const server = new ApolloServer({
